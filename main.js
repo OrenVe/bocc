@@ -3698,5 +3698,68 @@ ga('send', 'pageview');
 if (UI_ExternalScript=="1" && ExternalScript_URL!="") {
 	$.getScript(ExternalScript_URL);
 }
+// EFFECTS TEST
+class SpinzakuEffect {
+  static command = '/spinzaku';
+
+  static init() {
+
+    SpinzakuEffect.state = {
+      // is_on : false,
+      is_enabled: true,
+      type: 'normal'
+    }
+    SpinzakuEffect.container = document.createElement('div');
+    // N=Normal, R=Right to left (otherwise left to right), S=slow, F=fast, V=very
+    //SpinzakuEffect.types = ['VF', 'F', 'N', 'S', 'VS', 'RVF', 'RF', 'RN', 'RS', 'RVS']
+    SpinzakuEffect.types = ['vf', 'f', 'n', 's', 'vs', 'rvf', 'rf', 'rn', 'rs', 'rvs']
+    SpinzakuEffect.image = "https://cdn.discordapp.com/attachments/1041466415649132545/1043917684015906966/SpinzakuSlow.webp"
+    document.documentElement.appendChild(SpinzakuEffect.container);
+  }
+
+  static enable() { SpinzakuEffect.state.is_enabled = true }
+  static disable() { SpinzakuEffect.state.is_enabled = false }
+  static stop() { }
+  static addElement(element) { SpinzakuEffect.container.appendChild(element); }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    // if ((message_parts.length > 0) && (message_parts[0] === "cache")) {
+    //     SpinzakuEffect.cacheImg();
+    // }
+    // console.log("In spinzaku. Len:")
+    // console.log(message_parts.length)
+    if (message_parts.length == 1) {
+      // console.log('spin type:')
+      //let given_type = message_parts[0].replace('type=', '')
+      let given_type = message_parts[0]
+      // console.log(given_type)
+      if (!SpinzakuEffect.types.includes(given_type)) {
+        return
+      } else {
+        SpinzakuEffect.state.type = given_type;
+        SpinzakuEffect._run_animation();
+      }
+    }
+    else if (message_parts.length == 0 && SpinzakuEffect.state.is_enabled) {
+      SpinzakuEffect.state.type = 'n';
+      SpinzakuEffect._run_animation();
+    }
+  }
+  static _run_animation() {
+    const inner = document.createElement('img')
+    inner.classList.add(`c-effect__spinzaku`);
+    inner.classList.add(`c-effect__spinzaku-${SpinzakuEffect.state.type}`);
+    inner.src = SpinzakuEffect.image;
+    SpinzakuEffect.addElement(inner);
+
+    const fn = () => {
+      inner.parentElement.removeChild(inner);
+      inner.removeEventListener('animationend', fn);
+    };
+    inner.addEventListener('animationend', fn);
+
+  }
+}
+
 
 /* ----- END OF LIBRARY ----- */
